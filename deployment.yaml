@@ -5,7 +5,6 @@ metadata:
 spec: {}
 status: {}
 ---
-# Definicao do servico Secret com os usuarios e senhas padrões
 apiVersion: v1
 kind: Secret
 metadata:
@@ -35,7 +34,6 @@ spec:
   selector:
     matchLabels:
       app: rabbitmq
-  strategy: {}
   template:
     metadata:
       labels:
@@ -88,7 +86,6 @@ spec:
   selector:
     matchLabels:
       app: redis
-  strategy: {}
   template:
     metadata:
       labels:
@@ -133,7 +130,6 @@ spec:
   selector:
     matchLabels:
       app: minio
-  strategy: {}
   template:
     metadata:
       labels:
@@ -147,7 +143,7 @@ spec:
           - containerPort: 9001
         env:
           - name: MINIO_BROWSER_REDIRECT_URL
-            value: "http://projeto.ada/minio/"
+            value: "http://projeto.ada/"
           - name:  MINIO_ROOT_USER
             valueFrom:
               secretKeyRef:
@@ -178,22 +174,24 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: rabbitmq-console
+  name: rabbitmq-service
   namespace: projeto-orquestracao
-  labels:
-    app: rabbitmq
 spec:
   selector:
     app: rabbitmq
   ports:
-  - protocol: TCP
+  - name: console
     port: 15672
     targetPort: 15672
+  - name: api
+    port: 5672
+    targetPort: 5672
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-console
+  name: redis-service
   namespace: projeto-orquestracao
   labels:
     app: redis
@@ -201,24 +199,30 @@ spec:
   selector:
     app: redis
   ports:
-  - protocol: TCP
+  - name: http
     port: 8001
     targetPort: 8001
+  - name: console
+    port: 6379
+    targetPort: 6379
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: minio-console
+  name: minio-service
   namespace: projeto-orquestracao
-  labels:
-    app: minio
 spec:
   selector:
     app: minio
   ports:
-  - protocol: TCP
+  - name: http
+    port: 9000
+    targetPort: 9000
+  - name: console
     port: 9001
     targetPort: 9001
+  type: ClusterIP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -276,21 +280,133 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: minio-console
+            name: minio-service
             port:
-              number: 9001
+              number: 9000
 ---
 ########################################################################
 # 
 # Deployment da palicação de detecção de fraudes
 # 
-# Pods:
+# Pods:http://127.0.0.1:9000/relatorios-fraudes/relatorio_10944-4_20240407200431.txt
 # 
 ########################################################################
-
-
-
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: preparar-ambiente
+  name: preparar-ambiente
+  namespace: projeto-orquestracao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: preparar-ambiente
+  template:
+    metadata:
+      labels:
+        app: preparar-ambiente
+    spec:
+      containers:
+      - image: rfrezende/app-projeto-ada:preparar-ambiente
+        imagePullPolicy: Always
+        name: preparar-ambiente
+        env:
+          - name:  USUARIO_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  usuario
+          - name:  SENHA_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  senha
+          - name: PYTHONUNBUFFERED
+            value: "1"
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: ".1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: producer
+  name: producer
+  namespace: projeto-orquestracao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      labels:
+        app: producer
+    spec:
+      containers:
+      - image: rfrezende/app-projeto-ada:producer
+        imagePullPolicy: Always
+        name: producer
+        env:
+          - name:  USUARIO_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  usuario
+          - name:  SENHA_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  senha
+          - name: PYTHONUNBUFFERED
+            value: "1"
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: ".1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: consumer
+  name: consumer
+  namespace: projeto-orquestracao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: consumer
+  template:
+    metadata:
+      labels:
+        app: consumer
+    spec:
+      containers:
+      - image: rfrezende/app-projeto-ada:consumer
+        imagePullPolicy: Always
+        name: consumer
+        env:
+          - name:  USUARIO_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  usuario
+          - name:  SENHA_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  senha
+          - name: PYTHONUNBUFFERED
+            value: "1"
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: ".1"
 ########################################################################
 #
 # Script para configuração do ambiente:

@@ -60,3 +60,6 @@ def declare_queue(channel, queue_name='transacoes_solicitadas', exchange_name='t
         except pika.exceptions.ChannelClosedByBroker:
             print_log('Aguardando a criacao do exchange no RabbitMQ')
             pass
+        except pika.exceptions.ChannelWrongStateError:
+            print_log('Aguardando a criacao do exchange no RabbitMQ')
+            pass

@@ -10,7 +10,7 @@
 #
 
 # -- Obs.:
-# Eu sei que não é boa prática usar sudo dentro de scripts, mas o minikube reclama 
+# Eu sei que não é boa prática colocar sudo dentro de scripts, mas o minikube reclama 
 # se usar o sudo para executar seus comandos. É a vida.
 
 set -e

@@ -240,7 +240,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: rabbitmq-console
+            name: rabbitmq-service
             port:
               number: 15672
 ---
@@ -260,7 +260,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: redis-console
+            name: redis-service
             port:
               number: 8001
 ---

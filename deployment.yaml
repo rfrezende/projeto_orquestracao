@@ -15,6 +15,32 @@ data:
    senha: c2VuaGEhZGlmaWNpbA==
 type: Opaque
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-pvc
+  namespace: projeto-orquestracao
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-pvc
+  namespace: projeto-orquestracao
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: standard
+---
 ########################################################################
 # 
 # Deployment dos serviços utilizados no sistema de detecção de fraudes
@@ -25,8 +51,6 @@ type: Opaque
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app: rabbitmq
   name: rabbitmq
   namespace: projeto-orquestracao
 spec:
@@ -77,8 +101,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app: redis
   name: redis
   namespace: projeto-orquestracao
 spec:
@@ -117,12 +139,17 @@ spec:
           requests:
             memory: 256Mi
             cpu: "0.2"
+        volumeMounts:
+          - mountPath: /data
+            name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: redis-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app: minio
   name: minio
   namespace: projeto-orquestracao
 spec:
@@ -170,6 +197,13 @@ spec:
           requests:
             memory: 256Mi
             cpu: "0.2"
+        volumeMounts:
+            - mountPath: /data
+              name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: minio-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -233,7 +267,7 @@ metadata:
     app: rabbitmq
 spec:
   rules:
-  - host: projeto.ada.rabbitmq
+  - host: rabbitmq.projeto.ada
     http:
       paths:
       - path: /
@@ -243,6 +277,8 @@ spec:
             name: rabbitmq-service
             port:
               number: 15672
+status:
+  loadBalancer: {}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -253,7 +289,7 @@ metadata:
     app: redis
 spec:
   rules:
-  - host: projeto.ada.redis
+  - host: redisprojeto.a.da
     http:
       paths:
       - path: /
@@ -273,7 +309,7 @@ metadata:
     app: minio
 spec:
   rules:
-  - host: projeto.ada.minio
+  - host: minio.projeto.ada
     http:
       paths:
       - path: /

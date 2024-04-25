@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: producer
+  name: producer
+  namespace: projeto-orquestracao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: producer
+  template:
+    metadata:
+      labels:
+        app: producer
+    spec:
+      containers:
+      - image: rfrezende/app-projeto-ada:producer
+        imagePullPolicy: Always
+        name: producer
+        env:
+          - name:  USUARIO_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  usuario
+          - name:  SENHA_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  senha
+          - name: PYTHONUNBUFFERED
+            value: "1"
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: ".1"

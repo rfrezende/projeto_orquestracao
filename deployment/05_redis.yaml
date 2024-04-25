@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  namespace: projeto-orquestracao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - image: redis/redis-stack
+        name: redis
+        ports:
+          - containerPort: 6379 
+          - containerPort: 8001
+        env:
+          - name:  REDIS_ARGS
+            value:  --save 60 1000 --appendonly yes
+          - name:  REDISTIMESERIES_ARGS
+            value:  "RETENTION_POLICY=20"
+        startupProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c 
+            - redis-cli ping | grep -q PONG
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+        resources:
+          limits:
+            memory: 512Mi
+            cpu: "1"
+          requests:
+            memory: 256Mi
+            cpu: "0.2"
+        volumeMounts:
+          - mountPath: /data
+            name: data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: redis-pvc

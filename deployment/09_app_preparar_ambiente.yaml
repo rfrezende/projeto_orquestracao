@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: preparar-ambiente
+  name: preparar-ambiente
+  namespace: projeto-orquestracao
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: preparar-ambiente
+  template:
+    metadata:
+      labels:
+        app: preparar-ambiente
+    spec:
+      containers:
+      - image: rfrezende/app-projeto-ada:preparar-ambiente
+        imagePullPolicy: Always
+        name: preparar-ambiente
+        env:
+          - name:  USUARIO_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  usuario
+          - name:  SENHA_PADRAO
+            valueFrom:
+              secretKeyRef:
+                name:  usuario-padrao
+                key:  senha
+          - name: PYTHONUNBUFFERED
+            value: "1"
+        resources:
+          limits:
+            memory: 50Mi
+            cpu: ".1"

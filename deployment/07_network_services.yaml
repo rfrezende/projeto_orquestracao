@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+  namespace: projeto-orquestracao
+spec:
+  selector:
+    app: rabbitmq
+  ports:
+  - name: console
+    port: 15672
+    targetPort: 15672
+  - name: api
+    port: 5672
+    targetPort: 5672
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: projeto-orquestracao
+  labels:
+    app: redis
+spec:
+  selector:
+    app: redis
+  ports:
+  - name: http
+    port: 8001
+    targetPort: 8001
+  - name: console
+    port: 6379
+    targetPort: 6379
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio-service
+  namespace: projeto-orquestracao
+spec:
+  selector:
+    app: minio
+  ports:
+  - name: http
+    port: 9000
+    targetPort: 9000
+  - name: console
+    port: 9001
+    targetPort: 9001
+  type: ClusterIP

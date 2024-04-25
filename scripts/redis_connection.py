@@ -23,4 +23,4 @@ def new_connection(host='redis-service', porta=6379):
             sleep(5)
             pass
         
-        return client
+    return client

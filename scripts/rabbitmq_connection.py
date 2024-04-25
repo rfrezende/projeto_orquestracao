@@ -38,7 +38,6 @@ def new_connection(usuario, senha, host='rabbitmq-service', vhost='projeto'):
             sleep(5)
             pass
     
-    print_log('Conectado ao RabbitMQ')
     return channel
     
 

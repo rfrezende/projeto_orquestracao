@@ -19,13 +19,12 @@ def new_connection(usuario, senha, host='rabbitmq-service', vhost='projeto'):
     Args:
         usuario (str): Usuario de acesso ao RabbitMQ
         senha (str): Senha de acesso ao RabbitMQ
-        host (str): Endereço do RabbitMQ
-        vhost (str): RabbitMQ virtual host a ser utilizado.
+        host (str, optional): Endereço do RabbitMQ. Defaults to 'rabbitmq-service'.
+        vhost (str, optional): Virtual host a ser utilizado. Defaults to 'projeto'.
 
     Returns:
         object: Objeto de conexão ao RabbitMQ
     """
-
     channel = None
     while not channel:
         try:

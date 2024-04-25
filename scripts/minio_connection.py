@@ -17,7 +17,9 @@ def new_connection(usuario, senha, host='minio-service'):
     """ Função para estabelecer a conexão com o MinIO
 
     Args:
-        host (str): Endereço do MinIO.
+        usuario (str): Usuario de conexao no MinIO.
+        senha (str): Senha de conexao ao MinIO.
+        host (str): Endereço do MinIO. Defaults to 'minio-service'.
 
     Returns:
         object: Objeto de conexão ao MinIO
@@ -26,11 +28,7 @@ def new_connection(usuario, senha, host='minio-service'):
     client = None
     while not client:
         try:
-            client = Minio(f"{host}:9000",
-                secure=False,
-                access_key=usuario,
-                secret_key=senha,
-            )
+            client = Minio(f"{host}:9000", secure=False, access_key=usuario, secret_key=senha)
         except:
             print_log('Aguardando MinIO')
             sleep(5)

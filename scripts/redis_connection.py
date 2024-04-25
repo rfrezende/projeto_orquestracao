@@ -14,6 +14,15 @@ from print_log import print_log
 
 
 def new_connection(host='redis-service', porta=6379):
+    """ Função para estabelecer a conexão com o Redis
+
+    Args:
+        host (str, optional): Endereço do Redis. Defaults to 'redis-service'.
+        porta (int, optional): Porta de conexÃo com o Redis. Defaults to 6379.
+
+    Returns:
+        _type_: _description_
+    """
     client = None
     while not client:
         try:

@@ -15,16 +15,20 @@
 
 set -e
 
-MINIKUBE=$(minikube status 2>&1)
+function verificar_minikube() {
+    echo $(minikube status --output=json 2>&1 | tail -1)
+}
 
-elif [[ $MINIKUBE =~ "command not found" ]]
+if [[ $(verificar_minikube) =~ "command not found" ]]; then
   echo -e '==== Instalando o Minikube\n'
   curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
   sudo install minikube-linux-amd64 /usr/bin/minikube && rm minikube-linux-amd64
+fi
 
-if [[ $MINIKUBE =~ "To start a cluster" ]]; then
+if [[ $(verificar_minikube) =~ "To start a cluster" ]]; then
   echo -e '==== Iniciando o Minikube\n'
   minikube start
+fi
 
 echo -e '\n==== Habilitando os addons necessários no Minikube'
 minikube addons enable ingress

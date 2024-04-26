@@ -58,4 +58,12 @@ spec:
           service:
             name: minio-service
             port:
+              number: 9001
+      - path: /relatorios-fraudes/
+        pathType: Prefix
+        backend:
+          service:
+            name: minio-service
+            port:
               number: 9000
+          

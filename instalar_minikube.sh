@@ -27,8 +27,8 @@ minikube addons enable ingress
 
 echo -e '\n==== Incluindo os endereços no arquivo de hosts ===='
 sudo bash -c "echo -e '\n# Ambiente do Projeto ADA/Caixa' >> /etc/hosts"
-sudo bash -c "echo '$(minikube ip) projeto.ada.minio' >> /etc/hosts"
-sudo bash -c "echo '$(minikube ip) projeto.ada.rabbitmq' >> /etc/hosts"
-sudo bash -c "echo '$(minikube ip) projeto.ada.redis' >> /etc/hosts"
+sudo bash -c "echo '$(minikube ip) minio.projeto.ada' >> /etc/hosts"
+sudo bash -c "echo '$(minikube ip) rabbitmq.projeto.ada' >> /etc/hosts"
+sudo bash -c "echo '$(minikube ip) redis.projeto.ada' >> /etc/hosts"
 
 echo -e '\n==== Instalação finalizada ===='

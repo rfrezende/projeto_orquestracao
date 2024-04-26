@@ -29,6 +29,6 @@ while [ $(minikube kubectl -- get pods | grep -o Running | wc -l) -ne $qtd_pods 
   sleep 5
 done
 
-echo -e '\n\n==== Comando para exibir o log do consumer (pressione "Control + c" para sair) ===='
+echo -e '\n\n==== Exibindo o log do consumer (pressione "Control + c" para sair) ===='
 consumer=$(minikube kubectl -- get pods | grep consumer | cut -d' ' -f 1)
 minikube kubectl -- logs --follow $consumer --namespace=projeto-orquestracao

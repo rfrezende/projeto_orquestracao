@@ -24,7 +24,7 @@ minikube start
 
 echo -e '\n==== Habilitando os addons necessários no Minikube ===='
 minikube addons enable ingress
-minikube addons list | grep ingress
+minikube addons enable metrics-server
 
 echo -e '\n==== Incluindo os endereços no arquivo de hosts ===='
 sudo bash -c "echo -e '\n# Ambiente do Projeto ADA/Caixa' >> /etc/hosts"

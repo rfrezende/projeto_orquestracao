@@ -19,7 +19,16 @@ for deployment in ./deployment/*.yaml; do
     minikube kubectl -- apply -f $deployment
 done
 
+echo -e '\n\n===== Aguardando o ambiente subir. Pode demorar alguns minutos'
+barra='#'
+get_pods=$(minikube kubectl -- get pods | wc -l)
+qtd_pods=$((get_pods-1))
+while [ $(minikube kubectl -- get pods | grep -o Running | wc -l) -ne $qtd_pods ]; do
+  echo -ne "\r ${barra}"
+  barra="${barra}#"
+  sleep 5
+done
+
 echo -e '\n\n==== Comando para exibir o log do consumer (pressione "Control + c" para sair) ===='
-echo -e '\n==== Pode demorar alguns minutos para subir tudo e começar a gerar os relatórios  ====\n\n'
 consumer=$(minikube kubectl -- get pods | grep consumer | cut -d' ' -f 1)
-echo minikube kubectl -- logs --follow $consumer --namespace=projeto-orquestracao
+minikube kubectl -- logs --follow $consumer --namespace=projeto-orquestracao

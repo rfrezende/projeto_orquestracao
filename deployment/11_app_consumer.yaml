@@ -36,3 +36,10 @@ spec:
           limits:
             memory: 50Mi
             cpu: ".1"
+        volumeMounts:
+          - name: tz-config
+            mountPath: /etc/localtime
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/America/Sao_Paulo

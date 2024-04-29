@@ -37,6 +37,8 @@ O critério para fraude foi a mudança de cidades em um intervalo menor do que d
 
 ```bash
 git clone https://github.com/rfrezende/projeto_orquestracao.git
+```
+```bash
 cd projeto_orquestracao
 ```
 

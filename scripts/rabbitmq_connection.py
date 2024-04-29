@@ -49,15 +49,6 @@ def declare_queue(channel, queue_name='transacoes_solicitadas', exchange_name='t
         exchange_name (str, optional): Nome do exchange utilizado. Defaults to 'transacoes'.
         rkey (str, optional): Nome da chave de roteamento (Routing Key). Defaults to 'solicitar'.
     """
-    existe_exchange = False
-    while not existe_exchange:
-        try: 
-            channel.queue_declare(queue=queue_name, durable=True)
-            channel.queue_bind(queue=queue_name, exchange=exchange_name, routing_key=rkey)
-            existe_exchange = True
-        except pika.exceptions.ChannelClosedByBroker:
-            print_log('Aguardando a criacao do exchange no RabbitMQ')
-            pass
-        except pika.exceptions.ChannelWrongStateError:
-            print_log('Aguardando a criacao do exchange no RabbitMQ')
-            pass
+    channel.queue_declare(queue=queue_name, durable=True)
+    channel.queue_bind(queue=queue_name, exchange=exchange_name, routing_key=rkey)
+
